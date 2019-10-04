@@ -1,12 +1,16 @@
 import argparse
 import torch
 import torch.nn as nn
-from models import MobileNet, BaseLineNet
 import utils
 import torch.optim as optim
 import torchvision
-from torchvision import transforms
-import option
+from torchvision import transforms, datasets
+
+from models import MobileNet, BaseLineNet
+from option import get_option
+from Trainer import Trainer
+from data_loader import tiny_imagenet
+from tensorboardX import SummaryWriter
 
 """
 MobileNet models were trained in TensorFlow [1] using RMSprop [33] with asynchronous gradient descent similar to Inception V3 [31].
@@ -26,11 +30,24 @@ Args
 """
 
 
-x = torch.randn((64, 3, 224, 224))
+option = get_option()
+
+# dataLoader(option.data_dir)
+
+
+x = torch.randn((64, 3, 64, 64))
 
 
 model = MobileNet()
-optimizer = optim.RMSprop(model.parameters(), lr=0.2,
-                          momentum=0.9, weight_decay=0.9, eps=1.0)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(model.parameters(), lr=0.2,
+                      momentum=0.9, weight_decay=0.9)
 
 baseline = BaseLineNet()
+
+
+loaders = tiny_imagenet()
+
+Trainer(loaders, model, criterion, optimizer, )
+
+print(model(x).size())

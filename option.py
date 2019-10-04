@@ -37,6 +37,6 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
                          'multi node data parallel training')
 
 
-def get_option(override):
+def get_option():
     opt = parser.parse_args()
     return opt

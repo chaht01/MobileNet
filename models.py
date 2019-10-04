@@ -45,7 +45,7 @@ class MobileNet(nn.Module):
         super(MobileNet, self).__init__()
         self.width_mult = width_mult
         self.res_mult = res_mult
-        self.conv1 = self._conv(3, 32, 3, 2)
+        self.conv1 = self._conv(3, 32, 3, 1)
         self.channels = [32, 64, 128, 128, 256,
                          256, 512, 512, 512, 512, 512, 512, 1024, 1024]
         self.stride = [1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2]
@@ -73,6 +73,7 @@ class MobileNet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.dw(x)
+        print(x.size())
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)

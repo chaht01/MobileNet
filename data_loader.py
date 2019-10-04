@@ -9,23 +9,23 @@ from PIL import Image
 import os
 
 
-class SomeDataLoader(Dataset):
-    def __init__(self, option):
-        super(SomeDataLoader, self).__init__()
-        # extract pre defined options for data loading
-        data_dir = option.data_dir
-        workers = option.num_workers
-        self.train_transform = transforms.Compose([
-            transforms.RandomSizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])
-        ])
-        self.test_transform = transforms.Compose([
-            transforms.Scale(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])
-        ])
+def tiny_imagenet(data_dir, workers=4, batch_size=64, pretrained=False):
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(64, padding=8),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(), normalize, ])
+    tr_dataset = datasets.ImageFolder(
+        data_dir+'/train', transform=transform_train)
+    tr_loader = DataLoader(
+        tr_dataset, batch_size=batch_size, shuffle=True, num_workers=8)
+    # evaluation during training
+    transform_test = transforms.Compose([
+        transforms.ToTensor(), normalize, ])
+    te_dataset = datasets.ImageFolder(
+        data_dir+'/test', transform=transform_test)
+    te_loader = DataLoader(
+        te_dataset, batch_size=batch_size, shuffle=False, num_workers=8)
+
+    return tr_loader, te_loader
