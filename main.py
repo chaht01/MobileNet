@@ -58,17 +58,7 @@ else:  # SGD
     optimizer = optim.SGD(net.parameters(), lr=option.lr,
                           momentum=option.momentum, weight_decay=option.weight_decay)
 
-lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer,
-    mode='min',
-    factor=0.1,
-    patience=10,
-    verbose=False,
-    threshold=0.0001,
-    threshold_mode='rel',
-    cooldown=0,
-    min_lr=0,
-    eps=1e-08)
+lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 30, gamma=0.1, last_epoch=-1)
 
 # Summarizer
 summary_path = '%s/runs/%s' % (option.save_dir, option.exp)
