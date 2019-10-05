@@ -25,6 +25,7 @@ class Trainer(object):
             option):
         self.option = option
         self.device = device
+        self.purge_step = None
 
         os.makedirs('%s/%s' % (self.option.save_dir,
                                self.option.exp), exist_ok=True)
@@ -70,6 +71,7 @@ class Trainer(object):
         data_time = utils.AverageMeter()
 
         end = time.time()
+        print("start learning with lr: %f" % (self.lr_scheduler.get_lr()[0]))
         for step, (images, labels) in enumerate(data_loader):
             # data loading time
             data_time.update(time.time() - end)
@@ -93,8 +95,9 @@ class Trainer(object):
                     epoch, step, losses.avg, data_time.avg, batch_time.avg))
 
         # Decay learning rate using plateu policy
-        self.summarizer.add_scalar('lr/train', self._get_lr(), epoch)
-        self.lr_scheduler.step(losses.avg)
+        self.summarizer.add_scalar(
+            'lr/train', self.lr_scheduler.get_lr()[0], epoch)
+        self.lr_scheduler.step()
         self.summarizer.add_scalar('loss/train', losses.avg, epoch)
 
         # self.summarizer.add_scalar('lr', )
@@ -150,7 +153,7 @@ class Trainer(object):
 
         for epoch in range(self.option.start_epoch+1, self.option.epochs):
             filename = '%s/%s/%d.pth' % (self.option.save_dir,
-                                      self.option.exp, epoch)
+                                         self.option.exp, epoch)
 
             self._train_step(epoch, train_loader)
             acc = self._validate_step(epoch, val_loader)

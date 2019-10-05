@@ -58,13 +58,19 @@ else:  # SGD
     optimizer = optim.SGD(net.parameters(), lr=option.lr,
                           momentum=option.momentum, weight_decay=option.weight_decay)
 
-lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 30, gamma=0.1, last_epoch=-1)
+lambda1 = lambda epoch: 0.1 ** (epoch//30)
+lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
 
 # Summarizer
 summary_path = '%s/runs/%s' % (option.save_dir, option.exp)
 os.makedirs(summary_path, exist_ok=True)
-summarizer = SummaryWriter(summary_path)
-
+if option.resume is not None:
+    state_dict = torch.load(option.resume)
+    purge_step = state_dict['epoch']+1
+    summarizer = SummaryWriter(summary_path, purge_step=purge_step)
+else:
+    summarizer = SummaryWriter(summary_path)
+    
 # GPU
 device = "cuda:%d" % (option.gpu) if torch.cuda.is_available() else "cpu"
 
