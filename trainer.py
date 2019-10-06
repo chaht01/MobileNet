@@ -52,6 +52,8 @@ class Trainer(object):
             self.optimizer.load_state_dict(state_dict['optimizer'])
             self.best_acc = state_dict['best_acc']
             self.lr_scheduler.load_state_dict(state_dict['scheduler'])
+        else:
+            self.option.start_epoch = -1
 
     def _set_training(self, is_train=True):
         if is_train:
@@ -167,14 +169,14 @@ class Trainer(object):
             if self.best_acc < acc:
                 self.best_acc = acc
                 is_best = True
-
-            torch.save({
-                'epoch': epoch,
-                'state_dict': self.model.state_dict(),
-                'best_acc': self.best_acc,
-                'optimizer': self.optimizer.state_dict(),
-                'scheduler': self.lr_scheduler.state_dict()
-            }, filename)
+            if is_best or epoch // self.option.save_epoch == 0 or epoch == self.option.epochs-1:
+                torch.save({
+                    'epoch': epoch,
+                    'state_dict': self.model.state_dict(),
+                    'best_acc': self.best_acc,
+                    'optimizer': self.optimizer.state_dict(),
+                    'scheduler': self.lr_scheduler.state_dict()
+                }, filename)
 
             if is_best:
                 shutil.copyfile(filename, '%s/%s/best.pth' %

@@ -53,9 +53,9 @@ loaders = load_data(option.dataset, option.workers, option.batch_size)
 
 # Models
 if option.arch == 'MobileNet':
-    net = MobileNet(width_mult=option.width_mult)
+    net = MobileNet(width_mult=option.width_mult, shallow=option.shallow)
 elif option.arch == 'MobileNet2':
-    net = MobileNet2(width_mult=option.width_mult)
+    net = MobileNet2(width_mult=option.width_mult, shallow=option.shallow)
 else:
     net = BaseLineNet()
 
