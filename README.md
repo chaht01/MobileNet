@@ -20,3 +20,8 @@ For example,
 python main.py --resume results/[EXPERIMENT_NAME]/4.pth
 ```
 will perform training from epoch number 5(0-based index) with an assumption training of epoch number 4 completed without any error.
+
+## Get Flops and # of params
+```
+python flop.py
+```
