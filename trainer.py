@@ -25,6 +25,7 @@ class Trainer(object):
             option):
         self.option = option
         self.device = device
+        self.purge_step = None
 
         os.makedirs('%s/%s' % (self.option.save_dir,
                                self.option.exp), exist_ok=True)
@@ -51,6 +52,8 @@ class Trainer(object):
             self.optimizer.load_state_dict(state_dict['optimizer'])
             self.best_acc = state_dict['best_acc']
             self.lr_scheduler.load_state_dict(state_dict['scheduler'])
+        else:
+            self.option.start_epoch = -1
 
     def _set_training(self, is_train=True):
         if is_train:
@@ -59,8 +62,11 @@ class Trainer(object):
             self.model.eval()
 
     def _get_lr(self):
-        for param_group in self.optimizer.param_groups:
-            return param_group['lr']
+        if self.option.lr_scheduler == 'plat':
+            for param_group in self.optimizer.param_groups:
+                return param_group['lr']
+        else:
+            return self.lr_scheduler.get_lr()[0]
 
     def _train_step(self, epoch, data_loader):
         self._set_training(True)
@@ -70,6 +76,7 @@ class Trainer(object):
         data_time = utils.AverageMeter()
 
         end = time.time()
+        print("start learning with lr: %f" % (self._get_lr()))
         for step, (images, labels) in enumerate(data_loader):
             # data loading time
             data_time.update(time.time() - end)
@@ -93,8 +100,12 @@ class Trainer(object):
                     epoch, step, losses.avg, data_time.avg, batch_time.avg))
 
         # Decay learning rate using plateu policy
+
         self.summarizer.add_scalar('lr/train', self._get_lr(), epoch)
-        self.lr_scheduler.step(losses.avg)
+        if self.option.lr_scheduler == 'plat':
+            self.lr_scheduler.step(losses.avg)
+        else:
+            self.lr_scheduler.step()
         self.summarizer.add_scalar('loss/train', losses.avg, epoch)
 
         # self.summarizer.add_scalar('lr', )
@@ -150,7 +161,7 @@ class Trainer(object):
 
         for epoch in range(self.option.start_epoch+1, self.option.epochs):
             filename = '%s/%s/%d.pth' % (self.option.save_dir,
-                                      self.option.exp, epoch)
+                                         self.option.exp, epoch)
 
             self._train_step(epoch, train_loader)
             acc = self._validate_step(epoch, val_loader)
@@ -158,14 +169,14 @@ class Trainer(object):
             if self.best_acc < acc:
                 self.best_acc = acc
                 is_best = True
-
-            torch.save({
-                'epoch': epoch,
-                'state_dict': self.model.state_dict(),
-                'best_acc': self.best_acc,
-                'optimizer': self.optimizer.state_dict(),
-                'scheduler': self.lr_scheduler.state_dict()
-            }, filename)
+            if is_best or epoch // self.option.save_epoch == 0 or epoch == self.option.epochs-1:
+                torch.save({
+                    'epoch': epoch,
+                    'state_dict': self.model.state_dict(),
+                    'best_acc': self.best_acc,
+                    'optimizer': self.optimizer.state_dict(),
+                    'scheduler': self.lr_scheduler.state_dict()
+                }, filename)
 
             if is_best:
                 shutil.copyfile(filename, '%s/%s/best.pth' %

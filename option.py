@@ -3,8 +3,16 @@ import argparse
 parser = argparse.ArgumentParser(description='MobileNet Pytorch')
 parser.add_argument('--exp', type=str, required=True)
 parser.add_argument('--arch', type=str,
-                    choices=['MobileNet', 'CNN'], default='MobileNet')
+                    choices=['MobileNet', 'MobileNet2', 'CNN'], default='MobileNet')
+parser.add_argument('--shallow', action='store_true')
 parser.add_argument('--lr', type=float, default=0.01)
+parser.add_argument('--lr_decay', type=float)
+parser.add_argument('--lr_patience', type=int, default=10)
+parser.add_argument('--lr_step', type=int, default=None)
+parser.add_argument('--lr_plat_factor', type=float, default=0.1)
+parser.add_argument('--lr_threshold', type=float, default=0.05)
+parser.add_argument(
+    '--lr_scheduler', choices=['exp', 'step', 'plat'], default=None)
 parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--weight_decay', type=float, default=1e-4)
 parser.add_argument('--eps', type=float, default=1.0)
@@ -12,7 +20,6 @@ parser.add_argument(
     '--optimizer', choices=['SGD', 'RMSProp', 'Adam'], default='RMSProp')
 
 parser.add_argument('--epochs', type=int, default=300)
-parser.add_argument('--start_epoch', type=int, default=-1)
 parser.add_argument('--batch_size', type=int, default=128)
 
 parser.add_argument('--width_mult', type=float, default=1.0)
@@ -20,8 +27,9 @@ parser.add_argument('--width_mult', type=float, default=1.0)
 parser.add_argument('--resume', default=None, help='checkpoint to resume')
 parser.add_argument('--log_step', type=int, default=50,
                     help='step for logging in iteration')
-parser.add_argument('--save_epoch', type=int, default=10,
+parser.add_argument('--save_epoch', type=int, default=1,
                     help='step for saving in epoch')
+parser.add_argument('--dataset', choices=['tiny-imagenet', 'stanford-dogs'], default='tiny-imagenet')
 parser.add_argument('--data_dir', default='../../data/tiny-imagenet-200')
 parser.add_argument('--save_dir', default='./ckpoints',
                     help='dave directory for checkpoint')

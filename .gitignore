@@ -1,3 +1,8 @@
 __pycache__
 .vscode
 ckpoints
+results
+optim_check
+mobile_cmp
+hyperparam
+width_cmp_new
