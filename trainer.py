@@ -60,8 +60,11 @@ class Trainer(object):
             self.model.eval()
 
     def _get_lr(self):
-        for param_group in self.optimizer.param_groups:
-            return param_group['lr']
+        if self.option.lr_scheduler == 'plat':
+            for param_group in self.optimizer.param_groups:
+                return param_group['lr']
+        else:
+            return self.lr_scheduler.get_lr()[0]
 
     def _train_step(self, epoch, data_loader):
         self._set_training(True)
@@ -71,7 +74,7 @@ class Trainer(object):
         data_time = utils.AverageMeter()
 
         end = time.time()
-        print("start learning with lr: %f" % (self.lr_scheduler.get_lr()[0]))
+        print("start learning with lr: %f" % (self._get_lr()))
         for step, (images, labels) in enumerate(data_loader):
             # data loading time
             data_time.update(time.time() - end)
@@ -95,9 +98,12 @@ class Trainer(object):
                     epoch, step, losses.avg, data_time.avg, batch_time.avg))
 
         # Decay learning rate using plateu policy
-        self.summarizer.add_scalar(
-            'lr/train', self.lr_scheduler.get_lr()[0], epoch)
-        self.lr_scheduler.step()
+
+        self.summarizer.add_scalar('lr/train', self._get_lr(), epoch)
+        if self.option.lr_scheduler == 'plat':
+            self.lr_scheduler.step(losses.avg)
+        else:
+            self.lr_scheduler.step()
         self.summarizer.add_scalar('loss/train', losses.avg, epoch)
 
         # self.summarizer.add_scalar('lr', )
