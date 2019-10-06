@@ -1,5 +1,9 @@
 # MobileNet
 
+## Results
+![Imgur](https://imgur.com/6O5iMHn.png)
+![Imgur](https://imgur.com/gRPgEgh.png)
+
 ## Reproduce experiments (training mobilenet only)
 ```
 ./scripts/run.sh
