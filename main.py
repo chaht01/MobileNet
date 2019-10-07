@@ -9,7 +9,7 @@ import torch.optim as optim
 import torchvision
 from torchvision import transforms, datasets
 
-from models import MobileNet, MobileNet2, BaseLineNet
+from models import MobileNet, MobileNet64, BaseLineNet
 from option import get_option
 from trainer import Trainer
 from data_loader import load_data
@@ -54,8 +54,8 @@ loaders = load_data(option.dataset, option.workers, option.batch_size)
 # Models
 if option.arch == 'MobileNet':
     net = MobileNet(width_mult=option.width_mult, shallow=option.shallow)
-elif option.arch == 'MobileNet2':
-    net = MobileNet2(width_mult=option.width_mult, shallow=option.shallow)
+elif option.arch == 'MobileNet64':
+    net = MobileNet64(width_mult=option.width_mult, shallow=option.shallow)
 else:
     net = BaseLineNet()
 

@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser(description='MobileNet Pytorch')
 parser.add_argument('--exp', type=str, required=True)
 parser.add_argument('--arch', type=str,
-                    choices=['MobileNet', 'MobileNet2', 'CNN'], default='MobileNet')
+                    choices=['MobileNet', 'MobileNet64', 'CNN'], default='MobileNet')
 parser.add_argument('--shallow', action='store_true')
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--lr_decay', type=float)
@@ -29,7 +29,8 @@ parser.add_argument('--log_step', type=int, default=50,
                     help='step for logging in iteration')
 parser.add_argument('--save_epoch', type=int, default=1,
                     help='step for saving in epoch')
-parser.add_argument('--dataset', choices=['tiny-imagenet', 'stanford-dogs'], default='tiny-imagenet')
+parser.add_argument(
+    '--dataset', choices=['tiny-imagenet', 'stanford-dogs'], default='tiny-imagenet')
 parser.add_argument('--data_dir', default='../../data/tiny-imagenet-200')
 parser.add_argument('--save_dir', default='./ckpoints',
                     help='dave directory for checkpoint')

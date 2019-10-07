@@ -11,11 +11,11 @@ class MobileNet(nn.Module):
         self.conv1 = self._conv(3, self._apply_mult(32), 3, 2)
         if shallow is False:
             self.channels = [32, 64, 128, 128, 256,
-                            256, 512, 512, 512, 512, 512, 512, 1024, 1024]
+                             256, 512, 512, 512, 512, 512, 512, 1024, 1024]
             self.stride = [1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1]
         else:
             self.channels = [32, 64, 128, 128, 256,
-                            256, 512, 1024, 1024]
+                             256, 512, 1024, 1024]
             self.stride = [1, 2, 1, 2, 1, 2, 2, 1]
         self.dw = nn.Sequential(
             *[self._dw(self._apply_mult(channel),
@@ -31,7 +31,8 @@ class MobileNet(nn.Module):
 
     def _dw(self, in_channels, out_channels, stride=1):
         return nn.Sequential(
-            nn.Conv2d(in_channels, in_channels, 3, stride, 1, groups=in_channels),
+            nn.Conv2d(in_channels, in_channels, 3,
+                      stride, 1, groups=in_channels),
             nn.BatchNorm2d(in_channels),
             nn.ReLU(),
             nn.Conv2d(in_channels, out_channels, 1, 1, 0),
@@ -55,19 +56,19 @@ class MobileNet(nn.Module):
         return x
 
 
-class MobileNet2(nn.Module):
+class MobileNe64(nn.Module):
     def __init__(self, width_mult=1.0, res_mult=1.0, shallow=False):
-        super(MobileNet2, self).__init__()
+        super(MobileNet64, self).__init__()
         self.width_mult = width_mult
         self.res_mult = res_mult
         self.conv1 = self._conv(3, self._apply_mult(32), 3, 1)
         if shallow is False:
             self.channels = [32, 64, 128, 128, 256,
-                            256, 512, 512, 512, 512, 512, 512, 1024, 1024]
+                             256, 512, 512, 512, 512, 512, 512, 1024, 1024]
             self.stride = [1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1]
         else:
             self.channels = [32, 64, 128, 128, 256,
-                            256, 512, 1024, 1024]
+                             256, 512, 1024, 1024]
             self.stride = [1, 2, 1, 2, 1, 2, 2, 1]
         self.dw = nn.Sequential(
             *[self._dw(self._apply_mult(channel),
@@ -83,7 +84,8 @@ class MobileNet2(nn.Module):
 
     def _dw(self, in_channels, out_channels, stride=1):
         return nn.Sequential(
-            nn.Conv2d(in_channels, in_channels, 3, stride, 1, groups=in_channels),
+            nn.Conv2d(in_channels, in_channels, 3,
+                      stride, 1, groups=in_channels),
             nn.BatchNorm2d(in_channels),
             nn.ReLU(),
             nn.Conv2d(in_channels, out_channels, 1, 1, 0),
