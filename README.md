@@ -1,4 +1,4 @@
-# MobileNet-64
+# MobileNet-64 on Tiny ImageNet
 
 This model is implemented and modified based on the original MobileNet to handle images 64x64 size (The original model requires images with size at least 128). To do this, the first layer conducted without down-sampling, which indicated its stride size is 1(the original model's choice is 2). 
 
