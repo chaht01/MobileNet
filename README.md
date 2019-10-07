@@ -1,4 +1,10 @@
-# MobileNet
+# MobileNet-64
+
+This model is implemented and modified based on the original MobileNet to handle images 64x64 size (The original model requires images with size at least 128). To do this, the first layer conducted without down-sampling, which indicated its stride size is 1(the original model's choice is 2). 
+
+## Results
+![Imgur](https://imgur.com/6O5iMHn.png)
+![Imgur](https://imgur.com/gRPgEgh.png)
 
 ## Reproduce experiments (training mobilenet only)
 ```
